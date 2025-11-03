@@ -1,0 +1,24 @@
+var
+    media: real;
+    input, n: integer;
+
+body
+    writeln "Calcolo della media in decimi, inserisci 0 o un numero negativo per terminare";
+    media = 0;
+    input = 1;
+    n = 0;
+
+    while input > 0 do
+        write "inserisci un numero: "; 
+        read input;
+        media = media + input;
+        
+        if input > 0 then 
+            n = n + 1;
+        end;
+    end;
+
+    media = media / n;
+    write "La media è: ";
+    writeln media;
+end

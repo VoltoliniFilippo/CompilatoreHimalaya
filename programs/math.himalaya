@@ -1,0 +1,26 @@
+// Programma che dati due numeri interi ne calcola la somma, la differenza, il prodotto e la divisione
+var
+    a: integer;
+    b: integer;
+    somma: integer;
+    differenza: integer;
+    prodotto: integer;
+    divisione: integer;
+body
+    write "a: ";
+    read a;
+    write "b: ";
+    read b;
+    somma = a + b;
+    differenza = a - b;
+    prodotto = a * b;
+    divisione = a / b;
+    write "La somma è: ";
+    writeln somma;
+    write "La differenza è: ";
+    writeln differenza;
+    write "Il prodotto è: ";
+    writeln prodotto;
+    write "La divisione è: ";
+    writeln divisione;
+end

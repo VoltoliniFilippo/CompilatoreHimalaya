@@ -1,0 +1,23 @@
+var
+    a: real;
+    b: real;
+    somma: real;
+    differenza: real;
+    prodotto: real;
+    divisione: real;
+body
+    a = 13.7;
+    b = 5.2;
+    somma = a + b;
+    differenza = a - b;
+    prodotto = a * b;
+    divisione = a / b;
+    write "La somma è: ";
+    writeln somma;
+    write "La differenza è: ";
+    writeln differenza;
+    write "Il prodotto è: ";
+    writeln prodotto;
+    write "La divisione è: ";
+    writeln divisione;
+end

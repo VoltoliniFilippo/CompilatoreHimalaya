@@ -1,0 +1,3181 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: type_section var_section func_section body_section
+
+    2 type_section: TYPE type_decl_list
+    3             | ε
+
+    4 type_decl_list: type_decl type_decl_list
+    5               | type_decl
+
+    6 type_decl: id_list ASSIGN type SEMICOLON
+
+    7 @1: ε
+
+    8 id_list: ID @1 COMMA id_list
+    9        | ID
+
+   10 type: atomic_type
+   11     | struct_type
+   12     | vector_type
+
+   13 atomic_type: BOOLEAN
+   14            | INTEGER
+   15            | REAL
+   16            | STRING
+   17            | ID
+
+   18 struct_type: LBRACE atomic_decl_list RBRACE
+
+   19 atomic_decl_list: atomic_decl COMMA atomic_decl_list
+   20                 | atomic_decl
+
+   21 @2: ε
+
+   22 atomic_decl: ID @2 COLON atomic_type
+
+   23 vector_type: LBRACKET vector_elem_type RBRACKET
+
+   24 vector_elem_type: atomic_type
+   25                 | struct_type
+
+   26 var_section: VAR var_decl_list
+   27            | ε
+
+   28 var_decl_list: var_decl var_decl_list
+   29              | var_decl
+
+   30 var_decl: id_list COLON type SEMICOLON
+
+   31 func_section: FUNC_P func_decl_list
+   32             | ε
+
+   33 func_decl_list: func_decl func_decl_list
+   34               | func_decl
+
+   35 @3: ε
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list RPARENTESIS COLON type expr END
+
+   37 opt_formal_decl_list: formal_decl_list
+   38                     | ε
+
+   39 formal_decl_list: formal_decl COMMA formal_decl_list
+   40                 | formal_decl
+
+   41 @4: ε
+
+   42 formal_decl: ID @4 COLON type
+
+   43 expr: expr bool_op bool_term
+   44     | bool_term
+
+   45 bool_op: AND
+   46        | OR
+
+   47 bool_term: comp_term comp_op comp_term
+   48          | comp_term
+
+   49 comp_op: EQUAL
+   50        | NOT_EQUAL
+   51        | GREATER
+   52        | GREATER_EQUAL
+   53        | LESS
+   54        | LESS_EQUAL
+   55        | IN
+
+   56 comp_term: comp_term add_op term
+   57          | term
+
+   58 add_op: PLUS
+   59       | MINUS
+   60       | CONCAT
+
+   61 term: term mul_op factor
+   62     | factor
+
+   63 mul_op: TIMES
+   64       | DIVIDE
+
+   65 factor: unary_op factor
+   66       | LPARENTESIS expr RPARENTESIS
+   67       | MOD expr MOD
+   68       | lhs
+   69       | built_in LPARENTESIS expr RPARENTESIS
+   70       | atomic_constant
+   71       | struct_constructor
+   72       | vector_constructor
+   73       | range
+   74       | cond_expr
+   75       | func_call
+
+   76 unary_op: MINUS
+   77         | NOT
+
+   78 built_in: INTEGER
+   79         | REAL
+   80         | EMPTY
+   81         | HEAD_P
+   82         | TAIL_P
+
+   83 atomic_constant: BOOLCONST
+   84                | INTCONST
+   85                | REALCONST
+   86                | STRCONST
+
+   87 struct_constructor: LBRACE expr_list RBRACE
+
+   88 expr_list: expr COMMA expr_list
+   89          | expr
+
+   90 cond_expr: IF expr THEN expr ELSE expr END
+
+   91 @5: ε
+
+   92 func_call: ID @5 LPARENTESIS opt_expr_list RPARENTESIS
+
+   93 opt_expr_list: expr_list
+   94              | ε
+
+   95 vector_constructor: LBRACKET opt_expr_list RBRACKET
+
+   96 range: LBRACKET expr RANGE expr RBRACKET
+
+   97 body_section: BODY stat_list END
+
+   98 stat_list: stat SEMICOLON stat_list
+   99          | stat SEMICOLON
+
+  100 stat: read_stat
+  101     | write_stat
+  102     | assign_stat
+  103     | if_stat
+  104     | while_stat
+  105     | for_stat
+
+  106 read_stat: READ_P ID
+
+  107 write_stat: write_op expr
+
+  108 write_op: WRITE
+  109         | WRITELN
+
+  110 assign_stat: lhs ASSIGN expr
+
+  111 @6: ε
+
+  112 lhs: ID @6 opt_fielding
+  113    | indexing
+
+  114 opt_fielding: DOT ID
+  115             | ε
+
+  116 @7: ε
+
+  117 indexing: ID @7 LBRACKET expr RBRACKET opt_fielding
+
+  118 if_stat: IF expr THEN stat_list opt_elsif_stat_list opt_else_stat END
+
+  119 opt_elsif_stat_list: ELSIF expr THEN stat_list opt_elsif_stat_list
+  120                    | ε
+
+  121 opt_else_stat: ELSE stat_list
+  122              | ε
+
+  123 while_stat: WHILE expr DO stat_list END
+
+  124 @8: ε
+
+  125 for_stat: FOR ID @8 ASSIGN expr TO expr DO stat_list END
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    TYPE (258) 2
+    ID (259) 8 9 17 22 36 42 92 106 112 114 117 125
+    BOOLEAN (260) 13
+    INTEGER (261) 14 78
+    REAL (262) 15 79
+    STRING (263) 16
+    VAR (264) 26
+    FUNC_P (265) 31
+    END (266) 36 90 97 118 123 125
+    AND (267) 45
+    OR (268) 46
+    EQUAL (269) 49
+    NOT_EQUAL (270) 50
+    GREATER (271) 51
+    GREATER_EQUAL (272) 52
+    LESS (273) 53
+    LESS_EQUAL (274) 54
+    IN (275) 55
+    PLUS (276) 58
+    MINUS (277) 59 76
+    CONCAT (278) 60
+    TIMES (279) 63
+    DIVIDE (280) 64
+    NOT (281) 77
+    EMPTY (282) 80
+    HEAD_P (283) 81
+    TAIL_P (284) 82
+    BOOLCONST (285) 83
+    INTCONST (286) 84
+    REALCONST (287) 85
+    STRCONST (288) 86
+    IF (289) 90 118
+    THEN (290) 90 118 119
+    ELSE (291) 90 121
+    BODY (292) 97
+    READ_P (293) 106
+    ELSIF (294) 119
+    WHILE (295) 123
+    DO (296) 123 125
+    FOR (297) 125
+    TO (298) 125
+    WRITE (299) 108
+    WRITELN (300) 109
+    COMMA (301) 8 19 39 88
+    COLON (302) 22 30 36 42
+    SEMICOLON (303) 6 30 98 99
+    ASSIGN (304) 6 110 125
+    MOD (305) 67
+    RANGE (306) 96
+    DOT (307) 114
+    LBRACE (308) 18 87
+    RBRACE (309) 18 87
+    LBRACKET (310) 23 95 96 117
+    RBRACKET (311) 23 95 96 117
+    LPARENTESIS (312) 36 66 69 92
+    RPARENTESIS (313) 36 66 69 92
+
+
+Nonterminals, with rules where they appear
+
+    $accept (59)
+        on left: 0
+    program (60)
+        on left: 1
+        on right: 0
+    type_section (61)
+        on left: 2 3
+        on right: 1
+    type_decl_list (62)
+        on left: 4 5
+        on right: 2 4
+    type_decl (63)
+        on left: 6
+        on right: 4 5
+    id_list (64)
+        on left: 8 9
+        on right: 6 8 30
+    @1 (65)
+        on left: 7
+        on right: 8
+    type (66)
+        on left: 10 11 12
+        on right: 6 30 36 42
+    atomic_type (67)
+        on left: 13 14 15 16 17
+        on right: 10 22 24
+    struct_type (68)
+        on left: 18
+        on right: 11 25
+    atomic_decl_list (69)
+        on left: 19 20
+        on right: 18 19
+    atomic_decl (70)
+        on left: 22
+        on right: 19 20
+    @2 (71)
+        on left: 21
+        on right: 22
+    vector_type (72)
+        on left: 23
+        on right: 12
+    vector_elem_type (73)
+        on left: 24 25
+        on right: 23
+    var_section (74)
+        on left: 26 27
+        on right: 1
+    var_decl_list (75)
+        on left: 28 29
+        on right: 26 28
+    var_decl (76)
+        on left: 30
+        on right: 28 29
+    func_section (77)
+        on left: 31 32
+        on right: 1
+    func_decl_list (78)
+        on left: 33 34
+        on right: 31 33
+    func_decl (79)
+        on left: 36
+        on right: 33 34
+    @3 (80)
+        on left: 35
+        on right: 36
+    opt_formal_decl_list (81)
+        on left: 37 38
+        on right: 36
+    formal_decl_list (82)
+        on left: 39 40
+        on right: 37 39
+    formal_decl (83)
+        on left: 42
+        on right: 39 40
+    @4 (84)
+        on left: 41
+        on right: 42
+    expr (85)
+        on left: 43 44
+        on right: 36 43 66 67 69 88 89 90 96 107 110 117 118 119 123 125
+    bool_op (86)
+        on left: 45 46
+        on right: 43
+    bool_term (87)
+        on left: 47 48
+        on right: 43 44
+    comp_op (88)
+        on left: 49 50 51 52 53 54 55
+        on right: 47
+    comp_term (89)
+        on left: 56 57
+        on right: 47 48 56
+    add_op (90)
+        on left: 58 59 60
+        on right: 56
+    term (91)
+        on left: 61 62
+        on right: 56 57 61
+    mul_op (92)
+        on left: 63 64
+        on right: 61
+    factor (93)
+        on left: 65 66 67 68 69 70 71 72 73 74 75
+        on right: 61 62 65
+    unary_op (94)
+        on left: 76 77
+        on right: 65
+    built_in (95)
+        on left: 78 79 80 81 82
+        on right: 69
+    atomic_constant (96)
+        on left: 83 84 85 86
+        on right: 70
+    struct_constructor (97)
+        on left: 87
+        on right: 71
+    expr_list (98)
+        on left: 88 89
+        on right: 87 88 93
+    cond_expr (99)
+        on left: 90
+        on right: 74
+    func_call (100)
+        on left: 92
+        on right: 75
+    @5 (101)
+        on left: 91
+        on right: 92
+    opt_expr_list (102)
+        on left: 93 94
+        on right: 92 95
+    vector_constructor (103)
+        on left: 95
+        on right: 72
+    range (104)
+        on left: 96
+        on right: 73
+    body_section (105)
+        on left: 97
+        on right: 1
+    stat_list (106)
+        on left: 98 99
+        on right: 97 98 118 119 121 123 125
+    stat (107)
+        on left: 100 101 102 103 104 105
+        on right: 98 99
+    read_stat (108)
+        on left: 106
+        on right: 100
+    write_stat (109)
+        on left: 107
+        on right: 101
+    write_op (110)
+        on left: 108 109
+        on right: 107
+    assign_stat (111)
+        on left: 110
+        on right: 102
+    lhs (112)
+        on left: 112 113
+        on right: 68 110
+    @6 (113)
+        on left: 111
+        on right: 112
+    opt_fielding (114)
+        on left: 114 115
+        on right: 112 117
+    indexing (115)
+        on left: 117
+        on right: 113
+    @7 (116)
+        on left: 116
+        on right: 117
+    if_stat (117)
+        on left: 118
+        on right: 103
+    opt_elsif_stat_list (118)
+        on left: 119 120
+        on right: 118 119
+    opt_else_stat (119)
+        on left: 121 122
+        on right: 118
+    while_stat (120)
+        on left: 123
+        on right: 104
+    for_stat (121)
+        on left: 125
+        on right: 105
+    @8 (122)
+        on left: 124
+        on right: 125
+
+
+State 0
+
+    0 $accept: • program $end
+
+    TYPE  shift, and go to state 1
+
+    $default  reduce using rule 3 (type_section)
+
+    program       go to state 2
+    type_section  go to state 3
+
+
+State 1
+
+    2 type_section: TYPE • type_decl_list
+
+    ID  shift, and go to state 4
+
+    type_decl_list  go to state 5
+    type_decl       go to state 6
+    id_list         go to state 7
+
+
+State 2
+
+    0 $accept: program • $end
+
+    $end  shift, and go to state 8
+
+
+State 3
+
+    1 program: type_section • var_section func_section body_section
+
+    VAR  shift, and go to state 9
+
+    $default  reduce using rule 27 (var_section)
+
+    var_section  go to state 10
+
+
+State 4
+
+    8 id_list: ID • @1 COMMA id_list
+    9        | ID •
+
+    COMMA     reduce using rule 7 (@1)
+    $default  reduce using rule 9 (id_list)
+
+    @1  go to state 11
+
+
+State 5
+
+    2 type_section: TYPE type_decl_list •
+
+    $default  reduce using rule 2 (type_section)
+
+
+State 6
+
+    4 type_decl_list: type_decl • type_decl_list
+    5               | type_decl •
+
+    ID  shift, and go to state 4
+
+    $default  reduce using rule 5 (type_decl_list)
+
+    type_decl_list  go to state 12
+    type_decl       go to state 6
+    id_list         go to state 7
+
+
+State 7
+
+    6 type_decl: id_list • ASSIGN type SEMICOLON
+
+    ASSIGN  shift, and go to state 13
+
+
+State 8
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 9
+
+   26 var_section: VAR • var_decl_list
+
+    ID  shift, and go to state 4
+
+    id_list        go to state 14
+    var_decl_list  go to state 15
+    var_decl       go to state 16
+
+
+State 10
+
+    1 program: type_section var_section • func_section body_section
+
+    FUNC_P  shift, and go to state 17
+
+    $default  reduce using rule 32 (func_section)
+
+    func_section  go to state 18
+
+
+State 11
+
+    8 id_list: ID @1 • COMMA id_list
+
+    COMMA  shift, and go to state 19
+
+
+State 12
+
+    4 type_decl_list: type_decl type_decl_list •
+
+    $default  reduce using rule 4 (type_decl_list)
+
+
+State 13
+
+    6 type_decl: id_list ASSIGN • type SEMICOLON
+
+    ID        shift, and go to state 20
+    BOOLEAN   shift, and go to state 21
+    INTEGER   shift, and go to state 22
+    REAL      shift, and go to state 23
+    STRING    shift, and go to state 24
+    LBRACE    shift, and go to state 25
+    LBRACKET  shift, and go to state 26
+
+    type         go to state 27
+    atomic_type  go to state 28
+    struct_type  go to state 29
+    vector_type  go to state 30
+
+
+State 14
+
+   30 var_decl: id_list • COLON type SEMICOLON
+
+    COLON  shift, and go to state 31
+
+
+State 15
+
+   26 var_section: VAR var_decl_list •
+
+    $default  reduce using rule 26 (var_section)
+
+
+State 16
+
+   28 var_decl_list: var_decl • var_decl_list
+   29              | var_decl •
+
+    ID  shift, and go to state 4
+
+    $default  reduce using rule 29 (var_decl_list)
+
+    id_list        go to state 14
+    var_decl_list  go to state 32
+    var_decl       go to state 16
+
+
+State 17
+
+   31 func_section: FUNC_P • func_decl_list
+
+    ID  shift, and go to state 33
+
+    func_decl_list  go to state 34
+    func_decl       go to state 35
+
+
+State 18
+
+    1 program: type_section var_section func_section • body_section
+
+    BODY  shift, and go to state 36
+
+    body_section  go to state 37
+
+
+State 19
+
+    8 id_list: ID @1 COMMA • id_list
+
+    ID  shift, and go to state 4
+
+    id_list  go to state 38
+
+
+State 20
+
+   17 atomic_type: ID •
+
+    $default  reduce using rule 17 (atomic_type)
+
+
+State 21
+
+   13 atomic_type: BOOLEAN •
+
+    $default  reduce using rule 13 (atomic_type)
+
+
+State 22
+
+   14 atomic_type: INTEGER •
+
+    $default  reduce using rule 14 (atomic_type)
+
+
+State 23
+
+   15 atomic_type: REAL •
+
+    $default  reduce using rule 15 (atomic_type)
+
+
+State 24
+
+   16 atomic_type: STRING •
+
+    $default  reduce using rule 16 (atomic_type)
+
+
+State 25
+
+   18 struct_type: LBRACE • atomic_decl_list RBRACE
+
+    ID  shift, and go to state 39
+
+    atomic_decl_list  go to state 40
+    atomic_decl       go to state 41
+
+
+State 26
+
+   23 vector_type: LBRACKET • vector_elem_type RBRACKET
+
+    ID       shift, and go to state 20
+    BOOLEAN  shift, and go to state 21
+    INTEGER  shift, and go to state 22
+    REAL     shift, and go to state 23
+    STRING   shift, and go to state 24
+    LBRACE   shift, and go to state 25
+
+    atomic_type       go to state 42
+    struct_type       go to state 43
+    vector_elem_type  go to state 44
+
+
+State 27
+
+    6 type_decl: id_list ASSIGN type • SEMICOLON
+
+    SEMICOLON  shift, and go to state 45
+
+
+State 28
+
+   10 type: atomic_type •
+
+    $default  reduce using rule 10 (type)
+
+
+State 29
+
+   11 type: struct_type •
+
+    $default  reduce using rule 11 (type)
+
+
+State 30
+
+   12 type: vector_type •
+
+    $default  reduce using rule 12 (type)
+
+
+State 31
+
+   30 var_decl: id_list COLON • type SEMICOLON
+
+    ID        shift, and go to state 20
+    BOOLEAN   shift, and go to state 21
+    INTEGER   shift, and go to state 22
+    REAL      shift, and go to state 23
+    STRING    shift, and go to state 24
+    LBRACE    shift, and go to state 25
+    LBRACKET  shift, and go to state 26
+
+    type         go to state 46
+    atomic_type  go to state 28
+    struct_type  go to state 29
+    vector_type  go to state 30
+
+
+State 32
+
+   28 var_decl_list: var_decl var_decl_list •
+
+    $default  reduce using rule 28 (var_decl_list)
+
+
+State 33
+
+   36 func_decl: ID • @3 LPARENTESIS opt_formal_decl_list RPARENTESIS COLON type expr END
+
+    $default  reduce using rule 35 (@3)
+
+    @3  go to state 47
+
+
+State 34
+
+   31 func_section: FUNC_P func_decl_list •
+
+    $default  reduce using rule 31 (func_section)
+
+
+State 35
+
+   33 func_decl_list: func_decl • func_decl_list
+   34               | func_decl •
+
+    ID  shift, and go to state 33
+
+    $default  reduce using rule 34 (func_decl_list)
+
+    func_decl_list  go to state 48
+    func_decl       go to state 35
+
+
+State 36
+
+   97 body_section: BODY • stat_list END
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    stat_list    go to state 56
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 37
+
+    1 program: type_section var_section func_section body_section •
+
+    $default  reduce using rule 1 (program)
+
+
+State 38
+
+    8 id_list: ID @1 COMMA id_list •
+
+    $default  reduce using rule 8 (id_list)
+
+
+State 39
+
+   22 atomic_decl: ID • @2 COLON atomic_type
+
+    $default  reduce using rule 21 (@2)
+
+    @2  go to state 67
+
+
+State 40
+
+   18 struct_type: LBRACE atomic_decl_list • RBRACE
+
+    RBRACE  shift, and go to state 68
+
+
+State 41
+
+   19 atomic_decl_list: atomic_decl • COMMA atomic_decl_list
+   20                 | atomic_decl •
+
+    COMMA  shift, and go to state 69
+
+    $default  reduce using rule 20 (atomic_decl_list)
+
+
+State 42
+
+   24 vector_elem_type: atomic_type •
+
+    $default  reduce using rule 24 (vector_elem_type)
+
+
+State 43
+
+   25 vector_elem_type: struct_type •
+
+    $default  reduce using rule 25 (vector_elem_type)
+
+
+State 44
+
+   23 vector_type: LBRACKET vector_elem_type • RBRACKET
+
+    RBRACKET  shift, and go to state 70
+
+
+State 45
+
+    6 type_decl: id_list ASSIGN type SEMICOLON •
+
+    $default  reduce using rule 6 (type_decl)
+
+
+State 46
+
+   30 var_decl: id_list COLON type • SEMICOLON
+
+    SEMICOLON  shift, and go to state 71
+
+
+State 47
+
+   36 func_decl: ID @3 • LPARENTESIS opt_formal_decl_list RPARENTESIS COLON type expr END
+
+    LPARENTESIS  shift, and go to state 72
+
+
+State 48
+
+   33 func_decl_list: func_decl func_decl_list •
+
+    $default  reduce using rule 33 (func_decl_list)
+
+
+State 49
+
+  112 lhs: ID • @6 opt_fielding
+  117 indexing: ID • @7 LBRACKET expr RBRACKET opt_fielding
+
+    LBRACKET  reduce using rule 116 (@7)
+    $default  reduce using rule 111 (@6)
+
+    @6  go to state 73
+    @7  go to state 74
+
+
+State 50
+
+  118 if_stat: IF • expr THEN stat_list opt_elsif_stat_list opt_else_stat END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 92
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 51
+
+  106 read_stat: READ_P • ID
+
+    ID  shift, and go to state 106
+
+
+State 52
+
+  123 while_stat: WHILE • expr DO stat_list END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 107
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 53
+
+  125 for_stat: FOR • ID @8 ASSIGN expr TO expr DO stat_list END
+
+    ID  shift, and go to state 108
+
+
+State 54
+
+  108 write_op: WRITE •
+
+    $default  reduce using rule 108 (write_op)
+
+
+State 55
+
+  109 write_op: WRITELN •
+
+    $default  reduce using rule 109 (write_op)
+
+
+State 56
+
+   97 body_section: BODY stat_list • END
+
+    END  shift, and go to state 109
+
+
+State 57
+
+   98 stat_list: stat • SEMICOLON stat_list
+   99          | stat • SEMICOLON
+
+    SEMICOLON  shift, and go to state 110
+
+
+State 58
+
+  100 stat: read_stat •
+
+    $default  reduce using rule 100 (stat)
+
+
+State 59
+
+  101 stat: write_stat •
+
+    $default  reduce using rule 101 (stat)
+
+
+State 60
+
+  107 write_stat: write_op • expr
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 111
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 61
+
+  102 stat: assign_stat •
+
+    $default  reduce using rule 102 (stat)
+
+
+State 62
+
+  110 assign_stat: lhs • ASSIGN expr
+
+    ASSIGN  shift, and go to state 112
+
+
+State 63
+
+  113 lhs: indexing •
+
+    $default  reduce using rule 113 (lhs)
+
+
+State 64
+
+  103 stat: if_stat •
+
+    $default  reduce using rule 103 (stat)
+
+
+State 65
+
+  104 stat: while_stat •
+
+    $default  reduce using rule 104 (stat)
+
+
+State 66
+
+  105 stat: for_stat •
+
+    $default  reduce using rule 105 (stat)
+
+
+State 67
+
+   22 atomic_decl: ID @2 • COLON atomic_type
+
+    COLON  shift, and go to state 113
+
+
+State 68
+
+   18 struct_type: LBRACE atomic_decl_list RBRACE •
+
+    $default  reduce using rule 18 (struct_type)
+
+
+State 69
+
+   19 atomic_decl_list: atomic_decl COMMA • atomic_decl_list
+
+    ID  shift, and go to state 39
+
+    atomic_decl_list  go to state 114
+    atomic_decl       go to state 41
+
+
+State 70
+
+   23 vector_type: LBRACKET vector_elem_type RBRACKET •
+
+    $default  reduce using rule 23 (vector_type)
+
+
+State 71
+
+   30 var_decl: id_list COLON type SEMICOLON •
+
+    $default  reduce using rule 30 (var_decl)
+
+
+State 72
+
+   36 func_decl: ID @3 LPARENTESIS • opt_formal_decl_list RPARENTESIS COLON type expr END
+
+    ID  shift, and go to state 115
+
+    $default  reduce using rule 38 (opt_formal_decl_list)
+
+    opt_formal_decl_list  go to state 116
+    formal_decl_list      go to state 117
+    formal_decl           go to state 118
+
+
+State 73
+
+  112 lhs: ID @6 • opt_fielding
+
+    DOT  shift, and go to state 119
+
+    $default  reduce using rule 115 (opt_fielding)
+
+    opt_fielding  go to state 120
+
+
+State 74
+
+  117 indexing: ID @7 • LBRACKET expr RBRACKET opt_fielding
+
+    LBRACKET  shift, and go to state 121
+
+
+State 75
+
+   92 func_call: ID • @5 LPARENTESIS opt_expr_list RPARENTESIS
+  112 lhs: ID • @6 opt_fielding
+  117 indexing: ID • @7 LBRACKET expr RBRACKET opt_fielding
+
+    LBRACKET     reduce using rule 116 (@7)
+    LPARENTESIS  reduce using rule 91 (@5)
+    $default     reduce using rule 111 (@6)
+
+    @5  go to state 122
+    @6  go to state 73
+    @7  go to state 74
+
+
+State 76
+
+   78 built_in: INTEGER •
+
+    $default  reduce using rule 78 (built_in)
+
+
+State 77
+
+   79 built_in: REAL •
+
+    $default  reduce using rule 79 (built_in)
+
+
+State 78
+
+   76 unary_op: MINUS •
+
+    $default  reduce using rule 76 (unary_op)
+
+
+State 79
+
+   77 unary_op: NOT •
+
+    $default  reduce using rule 77 (unary_op)
+
+
+State 80
+
+   80 built_in: EMPTY •
+
+    $default  reduce using rule 80 (built_in)
+
+
+State 81
+
+   81 built_in: HEAD_P •
+
+    $default  reduce using rule 81 (built_in)
+
+
+State 82
+
+   82 built_in: TAIL_P •
+
+    $default  reduce using rule 82 (built_in)
+
+
+State 83
+
+   83 atomic_constant: BOOLCONST •
+
+    $default  reduce using rule 83 (atomic_constant)
+
+
+State 84
+
+   84 atomic_constant: INTCONST •
+
+    $default  reduce using rule 84 (atomic_constant)
+
+
+State 85
+
+   85 atomic_constant: REALCONST •
+
+    $default  reduce using rule 85 (atomic_constant)
+
+
+State 86
+
+   86 atomic_constant: STRCONST •
+
+    $default  reduce using rule 86 (atomic_constant)
+
+
+State 87
+
+   90 cond_expr: IF • expr THEN expr ELSE expr END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 123
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 88
+
+   67 factor: MOD • expr MOD
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 124
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 89
+
+   87 struct_constructor: LBRACE • expr_list RBRACE
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 125
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    expr_list           go to state 126
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 90
+
+   95 vector_constructor: LBRACKET • opt_expr_list RBRACKET
+   96 range: LBRACKET • expr RANGE expr RBRACKET
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    $default  reduce using rule 94 (opt_expr_list)
+
+    expr                go to state 127
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    expr_list           go to state 128
+    cond_expr           go to state 101
+    func_call           go to state 102
+    opt_expr_list       go to state 129
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 91
+
+   66 factor: LPARENTESIS • expr RPARENTESIS
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 130
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 92
+
+   43 expr: expr • bool_op bool_term
+  118 if_stat: IF expr • THEN stat_list opt_elsif_stat_list opt_else_stat END
+
+    AND   shift, and go to state 131
+    OR    shift, and go to state 132
+    THEN  shift, and go to state 133
+
+    bool_op  go to state 134
+
+
+State 93
+
+   44 expr: bool_term •
+
+    $default  reduce using rule 44 (expr)
+
+
+State 94
+
+   47 bool_term: comp_term • comp_op comp_term
+   48          | comp_term •
+   56 comp_term: comp_term • add_op term
+
+    EQUAL          shift, and go to state 135
+    NOT_EQUAL      shift, and go to state 136
+    GREATER        shift, and go to state 137
+    GREATER_EQUAL  shift, and go to state 138
+    LESS           shift, and go to state 139
+    LESS_EQUAL     shift, and go to state 140
+    IN             shift, and go to state 141
+    PLUS           shift, and go to state 142
+    MINUS          shift, and go to state 143
+    CONCAT         shift, and go to state 144
+
+    $default  reduce using rule 48 (bool_term)
+
+    comp_op  go to state 145
+    add_op   go to state 146
+
+
+State 95
+
+   57 comp_term: term •
+   61 term: term • mul_op factor
+
+    TIMES   shift, and go to state 147
+    DIVIDE  shift, and go to state 148
+
+    $default  reduce using rule 57 (comp_term)
+
+    mul_op  go to state 149
+
+
+State 96
+
+   62 term: factor •
+
+    $default  reduce using rule 62 (term)
+
+
+State 97
+
+   65 factor: unary_op • factor
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    factor              go to state 150
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 98
+
+   69 factor: built_in • LPARENTESIS expr RPARENTESIS
+
+    LPARENTESIS  shift, and go to state 151
+
+
+State 99
+
+   70 factor: atomic_constant •
+
+    $default  reduce using rule 70 (factor)
+
+
+State 100
+
+   71 factor: struct_constructor •
+
+    $default  reduce using rule 71 (factor)
+
+
+State 101
+
+   74 factor: cond_expr •
+
+    $default  reduce using rule 74 (factor)
+
+
+State 102
+
+   75 factor: func_call •
+
+    $default  reduce using rule 75 (factor)
+
+
+State 103
+
+   72 factor: vector_constructor •
+
+    $default  reduce using rule 72 (factor)
+
+
+State 104
+
+   73 factor: range •
+
+    $default  reduce using rule 73 (factor)
+
+
+State 105
+
+   68 factor: lhs •
+
+    $default  reduce using rule 68 (factor)
+
+
+State 106
+
+  106 read_stat: READ_P ID •
+
+    $default  reduce using rule 106 (read_stat)
+
+
+State 107
+
+   43 expr: expr • bool_op bool_term
+  123 while_stat: WHILE expr • DO stat_list END
+
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+    DO   shift, and go to state 152
+
+    bool_op  go to state 134
+
+
+State 108
+
+  125 for_stat: FOR ID • @8 ASSIGN expr TO expr DO stat_list END
+
+    $default  reduce using rule 124 (@8)
+
+    @8  go to state 153
+
+
+State 109
+
+   97 body_section: BODY stat_list END •
+
+    $default  reduce using rule 97 (body_section)
+
+
+State 110
+
+   98 stat_list: stat SEMICOLON • stat_list
+   99          | stat SEMICOLON •
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    $default  reduce using rule 99 (stat_list)
+
+    stat_list    go to state 154
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 111
+
+   43 expr: expr • bool_op bool_term
+  107 write_stat: write_op expr •
+
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+
+    $default  reduce using rule 107 (write_stat)
+
+    bool_op  go to state 134
+
+
+State 112
+
+  110 assign_stat: lhs ASSIGN • expr
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 155
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 113
+
+   22 atomic_decl: ID @2 COLON • atomic_type
+
+    ID       shift, and go to state 20
+    BOOLEAN  shift, and go to state 21
+    INTEGER  shift, and go to state 22
+    REAL     shift, and go to state 23
+    STRING   shift, and go to state 24
+
+    atomic_type  go to state 156
+
+
+State 114
+
+   19 atomic_decl_list: atomic_decl COMMA atomic_decl_list •
+
+    $default  reduce using rule 19 (atomic_decl_list)
+
+
+State 115
+
+   42 formal_decl: ID • @4 COLON type
+
+    $default  reduce using rule 41 (@4)
+
+    @4  go to state 157
+
+
+State 116
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list • RPARENTESIS COLON type expr END
+
+    RPARENTESIS  shift, and go to state 158
+
+
+State 117
+
+   37 opt_formal_decl_list: formal_decl_list •
+
+    $default  reduce using rule 37 (opt_formal_decl_list)
+
+
+State 118
+
+   39 formal_decl_list: formal_decl • COMMA formal_decl_list
+   40                 | formal_decl •
+
+    COMMA  shift, and go to state 159
+
+    $default  reduce using rule 40 (formal_decl_list)
+
+
+State 119
+
+  114 opt_fielding: DOT • ID
+
+    ID  shift, and go to state 160
+
+
+State 120
+
+  112 lhs: ID @6 opt_fielding •
+
+    $default  reduce using rule 112 (lhs)
+
+
+State 121
+
+  117 indexing: ID @7 LBRACKET • expr RBRACKET opt_fielding
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 161
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 122
+
+   92 func_call: ID @5 • LPARENTESIS opt_expr_list RPARENTESIS
+
+    LPARENTESIS  shift, and go to state 162
+
+
+State 123
+
+   43 expr: expr • bool_op bool_term
+   90 cond_expr: IF expr • THEN expr ELSE expr END
+
+    AND   shift, and go to state 131
+    OR    shift, and go to state 132
+    THEN  shift, and go to state 163
+
+    bool_op  go to state 134
+
+
+State 124
+
+   43 expr: expr • bool_op bool_term
+   67 factor: MOD expr • MOD
+
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+    MOD  shift, and go to state 164
+
+    bool_op  go to state 134
+
+
+State 125
+
+   43 expr: expr • bool_op bool_term
+   88 expr_list: expr • COMMA expr_list
+   89          | expr •
+
+    AND    shift, and go to state 131
+    OR     shift, and go to state 132
+    COMMA  shift, and go to state 165
+
+    $default  reduce using rule 89 (expr_list)
+
+    bool_op  go to state 134
+
+
+State 126
+
+   87 struct_constructor: LBRACE expr_list • RBRACE
+
+    RBRACE  shift, and go to state 166
+
+
+State 127
+
+   43 expr: expr • bool_op bool_term
+   88 expr_list: expr • COMMA expr_list
+   89          | expr •
+   96 range: LBRACKET expr • RANGE expr RBRACKET
+
+    AND    shift, and go to state 131
+    OR     shift, and go to state 132
+    COMMA  shift, and go to state 165
+    RANGE  shift, and go to state 167
+
+    $default  reduce using rule 89 (expr_list)
+
+    bool_op  go to state 134
+
+
+State 128
+
+   93 opt_expr_list: expr_list •
+
+    $default  reduce using rule 93 (opt_expr_list)
+
+
+State 129
+
+   95 vector_constructor: LBRACKET opt_expr_list • RBRACKET
+
+    RBRACKET  shift, and go to state 168
+
+
+State 130
+
+   43 expr: expr • bool_op bool_term
+   66 factor: LPARENTESIS expr • RPARENTESIS
+
+    AND          shift, and go to state 131
+    OR           shift, and go to state 132
+    RPARENTESIS  shift, and go to state 169
+
+    bool_op  go to state 134
+
+
+State 131
+
+   45 bool_op: AND •
+
+    $default  reduce using rule 45 (bool_op)
+
+
+State 132
+
+   46 bool_op: OR •
+
+    $default  reduce using rule 46 (bool_op)
+
+
+State 133
+
+  118 if_stat: IF expr THEN • stat_list opt_elsif_stat_list opt_else_stat END
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    stat_list    go to state 170
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 134
+
+   43 expr: expr bool_op • bool_term
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    bool_term           go to state 171
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 135
+
+   49 comp_op: EQUAL •
+
+    $default  reduce using rule 49 (comp_op)
+
+
+State 136
+
+   50 comp_op: NOT_EQUAL •
+
+    $default  reduce using rule 50 (comp_op)
+
+
+State 137
+
+   51 comp_op: GREATER •
+
+    $default  reduce using rule 51 (comp_op)
+
+
+State 138
+
+   52 comp_op: GREATER_EQUAL •
+
+    $default  reduce using rule 52 (comp_op)
+
+
+State 139
+
+   53 comp_op: LESS •
+
+    $default  reduce using rule 53 (comp_op)
+
+
+State 140
+
+   54 comp_op: LESS_EQUAL •
+
+    $default  reduce using rule 54 (comp_op)
+
+
+State 141
+
+   55 comp_op: IN •
+
+    $default  reduce using rule 55 (comp_op)
+
+
+State 142
+
+   58 add_op: PLUS •
+
+    $default  reduce using rule 58 (add_op)
+
+
+State 143
+
+   59 add_op: MINUS •
+
+    $default  reduce using rule 59 (add_op)
+
+
+State 144
+
+   60 add_op: CONCAT •
+
+    $default  reduce using rule 60 (add_op)
+
+
+State 145
+
+   47 bool_term: comp_term comp_op • comp_term
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    comp_term           go to state 172
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 146
+
+   56 comp_term: comp_term add_op • term
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    term                go to state 173
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 147
+
+   63 mul_op: TIMES •
+
+    $default  reduce using rule 63 (mul_op)
+
+
+State 148
+
+   64 mul_op: DIVIDE •
+
+    $default  reduce using rule 64 (mul_op)
+
+
+State 149
+
+   61 term: term mul_op • factor
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    factor              go to state 174
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 150
+
+   65 factor: unary_op factor •
+
+    $default  reduce using rule 65 (factor)
+
+
+State 151
+
+   69 factor: built_in LPARENTESIS • expr RPARENTESIS
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 175
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 152
+
+  123 while_stat: WHILE expr DO • stat_list END
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    stat_list    go to state 176
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 153
+
+  125 for_stat: FOR ID @8 • ASSIGN expr TO expr DO stat_list END
+
+    ASSIGN  shift, and go to state 177
+
+
+State 154
+
+   98 stat_list: stat SEMICOLON stat_list •
+
+    $default  reduce using rule 98 (stat_list)
+
+
+State 155
+
+   43 expr: expr • bool_op bool_term
+  110 assign_stat: lhs ASSIGN expr •
+
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+
+    $default  reduce using rule 110 (assign_stat)
+
+    bool_op  go to state 134
+
+
+State 156
+
+   22 atomic_decl: ID @2 COLON atomic_type •
+
+    $default  reduce using rule 22 (atomic_decl)
+
+
+State 157
+
+   42 formal_decl: ID @4 • COLON type
+
+    COLON  shift, and go to state 178
+
+
+State 158
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list RPARENTESIS • COLON type expr END
+
+    COLON  shift, and go to state 179
+
+
+State 159
+
+   39 formal_decl_list: formal_decl COMMA • formal_decl_list
+
+    ID  shift, and go to state 115
+
+    formal_decl_list  go to state 180
+    formal_decl       go to state 118
+
+
+State 160
+
+  114 opt_fielding: DOT ID •
+
+    $default  reduce using rule 114 (opt_fielding)
+
+
+State 161
+
+   43 expr: expr • bool_op bool_term
+  117 indexing: ID @7 LBRACKET expr • RBRACKET opt_fielding
+
+    AND       shift, and go to state 131
+    OR        shift, and go to state 132
+    RBRACKET  shift, and go to state 181
+
+    bool_op  go to state 134
+
+
+State 162
+
+   92 func_call: ID @5 LPARENTESIS • opt_expr_list RPARENTESIS
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    $default  reduce using rule 94 (opt_expr_list)
+
+    expr                go to state 125
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    expr_list           go to state 128
+    cond_expr           go to state 101
+    func_call           go to state 102
+    opt_expr_list       go to state 182
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 163
+
+   90 cond_expr: IF expr THEN • expr ELSE expr END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 183
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 164
+
+   67 factor: MOD expr MOD •
+
+    $default  reduce using rule 67 (factor)
+
+
+State 165
+
+   88 expr_list: expr COMMA • expr_list
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 125
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    expr_list           go to state 184
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 166
+
+   87 struct_constructor: LBRACE expr_list RBRACE •
+
+    $default  reduce using rule 87 (struct_constructor)
+
+
+State 167
+
+   96 range: LBRACKET expr RANGE • expr RBRACKET
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 185
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 168
+
+   95 vector_constructor: LBRACKET opt_expr_list RBRACKET •
+
+    $default  reduce using rule 95 (vector_constructor)
+
+
+State 169
+
+   66 factor: LPARENTESIS expr RPARENTESIS •
+
+    $default  reduce using rule 66 (factor)
+
+
+State 170
+
+  118 if_stat: IF expr THEN stat_list • opt_elsif_stat_list opt_else_stat END
+
+    ELSIF  shift, and go to state 186
+
+    $default  reduce using rule 120 (opt_elsif_stat_list)
+
+    opt_elsif_stat_list  go to state 187
+
+
+State 171
+
+   43 expr: expr bool_op bool_term •
+
+    $default  reduce using rule 43 (expr)
+
+
+State 172
+
+   47 bool_term: comp_term comp_op comp_term •
+   56 comp_term: comp_term • add_op term
+
+    PLUS    shift, and go to state 142
+    MINUS   shift, and go to state 143
+    CONCAT  shift, and go to state 144
+
+    $default  reduce using rule 47 (bool_term)
+
+    add_op  go to state 146
+
+
+State 173
+
+   56 comp_term: comp_term add_op term •
+   61 term: term • mul_op factor
+
+    TIMES   shift, and go to state 147
+    DIVIDE  shift, and go to state 148
+
+    $default  reduce using rule 56 (comp_term)
+
+    mul_op  go to state 149
+
+
+State 174
+
+   61 term: term mul_op factor •
+
+    $default  reduce using rule 61 (term)
+
+
+State 175
+
+   43 expr: expr • bool_op bool_term
+   69 factor: built_in LPARENTESIS expr • RPARENTESIS
+
+    AND          shift, and go to state 131
+    OR           shift, and go to state 132
+    RPARENTESIS  shift, and go to state 188
+
+    bool_op  go to state 134
+
+
+State 176
+
+  123 while_stat: WHILE expr DO stat_list • END
+
+    END  shift, and go to state 189
+
+
+State 177
+
+  125 for_stat: FOR ID @8 ASSIGN • expr TO expr DO stat_list END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 190
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 178
+
+   42 formal_decl: ID @4 COLON • type
+
+    ID        shift, and go to state 20
+    BOOLEAN   shift, and go to state 21
+    INTEGER   shift, and go to state 22
+    REAL      shift, and go to state 23
+    STRING    shift, and go to state 24
+    LBRACE    shift, and go to state 25
+    LBRACKET  shift, and go to state 26
+
+    type         go to state 191
+    atomic_type  go to state 28
+    struct_type  go to state 29
+    vector_type  go to state 30
+
+
+State 179
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list RPARENTESIS COLON • type expr END
+
+    ID        shift, and go to state 20
+    BOOLEAN   shift, and go to state 21
+    INTEGER   shift, and go to state 22
+    REAL      shift, and go to state 23
+    STRING    shift, and go to state 24
+    LBRACE    shift, and go to state 25
+    LBRACKET  shift, and go to state 26
+
+    type         go to state 192
+    atomic_type  go to state 28
+    struct_type  go to state 29
+    vector_type  go to state 30
+
+
+State 180
+
+   39 formal_decl_list: formal_decl COMMA formal_decl_list •
+
+    $default  reduce using rule 39 (formal_decl_list)
+
+
+State 181
+
+  117 indexing: ID @7 LBRACKET expr RBRACKET • opt_fielding
+
+    DOT  shift, and go to state 119
+
+    $default  reduce using rule 115 (opt_fielding)
+
+    opt_fielding  go to state 193
+
+
+State 182
+
+   92 func_call: ID @5 LPARENTESIS opt_expr_list • RPARENTESIS
+
+    RPARENTESIS  shift, and go to state 194
+
+
+State 183
+
+   43 expr: expr • bool_op bool_term
+   90 cond_expr: IF expr THEN expr • ELSE expr END
+
+    AND   shift, and go to state 131
+    OR    shift, and go to state 132
+    ELSE  shift, and go to state 195
+
+    bool_op  go to state 134
+
+
+State 184
+
+   88 expr_list: expr COMMA expr_list •
+
+    $default  reduce using rule 88 (expr_list)
+
+
+State 185
+
+   43 expr: expr • bool_op bool_term
+   96 range: LBRACKET expr RANGE expr • RBRACKET
+
+    AND       shift, and go to state 131
+    OR        shift, and go to state 132
+    RBRACKET  shift, and go to state 196
+
+    bool_op  go to state 134
+
+
+State 186
+
+  119 opt_elsif_stat_list: ELSIF • expr THEN stat_list opt_elsif_stat_list
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 197
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 187
+
+  118 if_stat: IF expr THEN stat_list opt_elsif_stat_list • opt_else_stat END
+
+    ELSE  shift, and go to state 198
+
+    $default  reduce using rule 122 (opt_else_stat)
+
+    opt_else_stat  go to state 199
+
+
+State 188
+
+   69 factor: built_in LPARENTESIS expr RPARENTESIS •
+
+    $default  reduce using rule 69 (factor)
+
+
+State 189
+
+  123 while_stat: WHILE expr DO stat_list END •
+
+    $default  reduce using rule 123 (while_stat)
+
+
+State 190
+
+   43 expr: expr • bool_op bool_term
+  125 for_stat: FOR ID @8 ASSIGN expr • TO expr DO stat_list END
+
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+    TO   shift, and go to state 200
+
+    bool_op  go to state 134
+
+
+State 191
+
+   42 formal_decl: ID @4 COLON type •
+
+    $default  reduce using rule 42 (formal_decl)
+
+
+State 192
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list RPARENTESIS COLON type • expr END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 201
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 193
+
+  117 indexing: ID @7 LBRACKET expr RBRACKET opt_fielding •
+
+    $default  reduce using rule 117 (indexing)
+
+
+State 194
+
+   92 func_call: ID @5 LPARENTESIS opt_expr_list RPARENTESIS •
+
+    $default  reduce using rule 92 (func_call)
+
+
+State 195
+
+   90 cond_expr: IF expr THEN expr ELSE • expr END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 202
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 196
+
+   96 range: LBRACKET expr RANGE expr RBRACKET •
+
+    $default  reduce using rule 96 (range)
+
+
+State 197
+
+   43 expr: expr • bool_op bool_term
+  119 opt_elsif_stat_list: ELSIF expr • THEN stat_list opt_elsif_stat_list
+
+    AND   shift, and go to state 131
+    OR    shift, and go to state 132
+    THEN  shift, and go to state 203
+
+    bool_op  go to state 134
+
+
+State 198
+
+  121 opt_else_stat: ELSE • stat_list
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    stat_list    go to state 204
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 199
+
+  118 if_stat: IF expr THEN stat_list opt_elsif_stat_list opt_else_stat • END
+
+    END  shift, and go to state 205
+
+
+State 200
+
+  125 for_stat: FOR ID @8 ASSIGN expr TO • expr DO stat_list END
+
+    ID           shift, and go to state 75
+    INTEGER      shift, and go to state 76
+    REAL         shift, and go to state 77
+    MINUS        shift, and go to state 78
+    NOT          shift, and go to state 79
+    EMPTY        shift, and go to state 80
+    HEAD_P       shift, and go to state 81
+    TAIL_P       shift, and go to state 82
+    BOOLCONST    shift, and go to state 83
+    INTCONST     shift, and go to state 84
+    REALCONST    shift, and go to state 85
+    STRCONST     shift, and go to state 86
+    IF           shift, and go to state 87
+    MOD          shift, and go to state 88
+    LBRACE       shift, and go to state 89
+    LBRACKET     shift, and go to state 90
+    LPARENTESIS  shift, and go to state 91
+
+    expr                go to state 206
+    bool_term           go to state 93
+    comp_term           go to state 94
+    term                go to state 95
+    factor              go to state 96
+    unary_op            go to state 97
+    built_in            go to state 98
+    atomic_constant     go to state 99
+    struct_constructor  go to state 100
+    cond_expr           go to state 101
+    func_call           go to state 102
+    vector_constructor  go to state 103
+    range               go to state 104
+    lhs                 go to state 105
+    indexing            go to state 63
+
+
+State 201
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list RPARENTESIS COLON type expr • END
+   43 expr: expr • bool_op bool_term
+
+    END  shift, and go to state 207
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+
+    bool_op  go to state 134
+
+
+State 202
+
+   43 expr: expr • bool_op bool_term
+   90 cond_expr: IF expr THEN expr ELSE expr • END
+
+    END  shift, and go to state 208
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+
+    bool_op  go to state 134
+
+
+State 203
+
+  119 opt_elsif_stat_list: ELSIF expr THEN • stat_list opt_elsif_stat_list
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    stat_list    go to state 209
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 204
+
+  121 opt_else_stat: ELSE stat_list •
+
+    $default  reduce using rule 121 (opt_else_stat)
+
+
+State 205
+
+  118 if_stat: IF expr THEN stat_list opt_elsif_stat_list opt_else_stat END •
+
+    $default  reduce using rule 118 (if_stat)
+
+
+State 206
+
+   43 expr: expr • bool_op bool_term
+  125 for_stat: FOR ID @8 ASSIGN expr TO expr • DO stat_list END
+
+    AND  shift, and go to state 131
+    OR   shift, and go to state 132
+    DO   shift, and go to state 210
+
+    bool_op  go to state 134
+
+
+State 207
+
+   36 func_decl: ID @3 LPARENTESIS opt_formal_decl_list RPARENTESIS COLON type expr END •
+
+    $default  reduce using rule 36 (func_decl)
+
+
+State 208
+
+   90 cond_expr: IF expr THEN expr ELSE expr END •
+
+    $default  reduce using rule 90 (cond_expr)
+
+
+State 209
+
+  119 opt_elsif_stat_list: ELSIF expr THEN stat_list • opt_elsif_stat_list
+
+    ELSIF  shift, and go to state 186
+
+    $default  reduce using rule 120 (opt_elsif_stat_list)
+
+    opt_elsif_stat_list  go to state 211
+
+
+State 210
+
+  125 for_stat: FOR ID @8 ASSIGN expr TO expr DO • stat_list END
+
+    ID       shift, and go to state 49
+    IF       shift, and go to state 50
+    READ_P   shift, and go to state 51
+    WHILE    shift, and go to state 52
+    FOR      shift, and go to state 53
+    WRITE    shift, and go to state 54
+    WRITELN  shift, and go to state 55
+
+    stat_list    go to state 212
+    stat         go to state 57
+    read_stat    go to state 58
+    write_stat   go to state 59
+    write_op     go to state 60
+    assign_stat  go to state 61
+    lhs          go to state 62
+    indexing     go to state 63
+    if_stat      go to state 64
+    while_stat   go to state 65
+    for_stat     go to state 66
+
+
+State 211
+
+  119 opt_elsif_stat_list: ELSIF expr THEN stat_list opt_elsif_stat_list •
+
+    $default  reduce using rule 119 (opt_elsif_stat_list)
+
+
+State 212
+
+  125 for_stat: FOR ID @8 ASSIGN expr TO expr DO stat_list • END
+
+    END  shift, and go to state 213
+
+
+State 213
+
+  125 for_stat: FOR ID @8 ASSIGN expr TO expr DO stat_list END •
+
+    $default  reduce using rule 125 (for_stat)

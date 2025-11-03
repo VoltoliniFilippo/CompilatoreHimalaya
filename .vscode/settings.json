@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "def.h": "c",
+        "gen_func.h": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "semantic.h": "c",
+        "stdlib.h": "c",
+        "gen.h": "c",
+        "virtual_machine.h": "c",
+        "stdarg.h": "c"
+    }
+}

@@ -1,0 +1,9 @@
+var
+    str: string;
+
+body
+    write "Scrivi qualcosa: ";
+    read str;
+    write "Hai scritto: ";
+    writeln str;
+end

@@ -1,0 +1,7 @@
+var
+    a: [integer];
+
+body
+    a = [90..100];
+    writeln a;
+end

@@ -1,0 +1,19 @@
+var
+    a : boolean;
+    b : boolean;
+
+body
+    a = true;
+    b = false;
+    if a == true then
+        writeln "a is true";
+    end;
+    
+    if b != true then
+        writeln "b is false";
+    end;
+
+    if a != b then
+        writeln "a is not equal to b";
+    end;
+end

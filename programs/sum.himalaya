@@ -1,0 +1,17 @@
+var
+    a: integer;
+    b: integer;
+    somma : integer;
+func
+    sum(a: integer, b:integer) : integer
+        a + b
+    end
+body
+    write "A: ";
+    read a;
+    write "B: ";
+    read b;
+    somma = sum(a,b);
+    write "somma: ";
+    writeln somma;
+end

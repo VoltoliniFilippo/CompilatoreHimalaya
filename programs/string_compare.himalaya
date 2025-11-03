@@ -1,0 +1,9 @@
+var
+    a: string;
+    b: string;
+
+body
+    a = "first";
+    b = "second";
+    write a < b;
+end

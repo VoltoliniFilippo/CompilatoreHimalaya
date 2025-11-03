@@ -1,0 +1,29 @@
+type
+  Vectint = [integer];
+var
+  totnum: integer;
+func
+  fib(n: integer): integer // numero di Fibonacci di n
+    if n == 0 or n == 1 then 
+      n
+    else 
+      fib(n-1) + fib(n-2)
+    end
+  end
+  fibnums(n: integer): Vectint // vettore dei numeri di Fibonacci da 0 a n
+    if n == 0 then 
+      [0] 
+    else 
+      fibnums(n-1) ++ [fib(n)]
+    end
+  end
+body
+  writeln "Inserisci un numero naturale: ";
+  read totnum;
+  if totnum >= 0 then
+    writeln "Numeri di Fibonacci: ";
+    write fibnums(totnum);
+  else
+    writeln "Il numero inserito non può essere negativo";
+  end;
+end  

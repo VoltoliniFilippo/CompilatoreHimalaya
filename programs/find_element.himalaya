@@ -1,0 +1,11 @@
+func
+    find_element(n: integer, v: [integer]): boolean
+        if n in v then
+            true
+        else
+            false
+        end
+    end
+body
+    write find_element(1, [1,2,3]);
+end

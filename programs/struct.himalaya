@@ -1,0 +1,11 @@
+type
+    struct = {nome: string, cognome: string, age: integer};
+
+var
+    a: struct;
+    b: struct;
+
+body
+    a = {"nome", "cognome", 10};
+    write a.nome;
+end
